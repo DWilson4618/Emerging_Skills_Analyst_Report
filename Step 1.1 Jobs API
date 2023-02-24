@@ -1,0 +1,108 @@
+# This section will cover collecting job data and storing the collected data into an excel spreadsheet
+#
+# Flask code required to run the API 
+https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/labs/module%201/Accessing%20Data%20Using%20APIs/Jobs_API.ipynb
+
+# Warm up task for using an API 
+# Lets find out who is currently on the International Space Station (ISS)
+#
+# Import the required libraries
+import requests
+import pandas as pd
+
+# This URL gives us the astronaut data
+api_url = "http://api.open-notify.org/astros.json"
+
+# Call the API and store its response
+response = requests.get(api_url)
+
+# If the response is okay store the result in json format in a new variable
+if response.ok:
+    data = response.json() 
+
+# print the data just to check for output or for debugging
+print(data)
+
+# Print the number of astronauts currently on ISS
+print(data.get('number'))
+
+# Print the names of teh astronauts currently on ISS
+astronauts = data.get('people')
+print("There are {} astronauts on ISS".format(len(astronauts)))
+print("And their names are :")
+for astronaut in astronauts:
+    print(astronaut.get('name'))
+    
+# Now we can move on to our actual dataset using the Jobs API
+#
+# Import the required libraries
+import pandas as pd
+import json
+
+# Our base url
+baseurl="http://127.0.0.1:5000/data"
+
+# Write a function to get the number of jobs for the Python technology 
+def get_number_of_jobs(technology):
+    number_of_jobs = 0
+    payload={"Key Skills":technology}
+    r=requests.get(api_url,params=payload)
+    if r.ok:
+        data=r.json()
+        number_of_jobs += len(data)
+    else:
+        number_of_jobs += len(data)
+    return technology,number_of_jobs
+
+# Call the function for Python and check if it works
+get_number_of_jobs("Python")
+
+# Next define a function to find the number of jobs in US for a location of your choice
+def get_number_of_jobs_L(location):
+    number_of_jobs = 0
+    payload={"Location":location}
+    r=requests.get(api_url,params=payload)
+    if r.ok:
+        data=r.json()
+        number_of_jobs += len(data)
+    else:
+        number_of_jobs += len(data)
+    return location,number_of_jobs
+
+# Call the function and see if its working
+get_number_of_jobs_L("Los_Angeles")
+
+# Next we will store the results in an Excel File
+#
+# Import the required libraries
+!pip install openpyxl
+from openpyxl import Workbook
+
+# Create a workbook object and use the active worksheet
+wb=Workbook()
+ws=wb.active
+
+# Now we define a new list to hold all the location names that we want jobs for
+all_locations = ["Los_Angeles","New_York","San_Francisco","Washington_DC","Seattle","Austin","Detroit"]
+
+# Define a new function to append our work sheet with the number of jobs available for each city
+def get_number_of_jobs_L(location):
+    for location in all_locations:
+        number_of_jobs = 0
+        payload={"Location":location}
+        r=requests.get(api_url,params=payload)
+        if r.ok:
+            data=r.json()
+            number_of_jobs += len(data)
+            ws.append(['Location','Number_of_Jobs'])
+        else:
+            number_of_jobs += len(data)
+            ws.append(['Location','Number_of_Jobs'])
+
+# Now call your function and pass in you list of cities
+get_number_of_jobs_L(all_locations)
+
+# Now save the workbook
+wb.save("job-postings.xlsx")
+
+# Now we have an excel worksheet that contains relevant data data about the number of jobs for a specific location
