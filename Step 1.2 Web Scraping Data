@@ -1,0 +1,35 @@
+# For this section we will extract infromation from a given web site, and write the data into a csv file
+#
+# Import the needed libraries
+!pip3 install beautifulsoup4
+print("BS Installed")
+!pip3 install requests
+print("Requests Installed")
+!pip install html5lib
+print("Html 5 Lib")
+
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import html5lib
+print("Done")
+
+# Next download the webpage at the url and assign it to a 'response' variable
+url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/labs/datasets/Programming_Languages.html"
+response = requests.get(url)
+
+# Next create a soup object using beautiful soup 
+soup = BeautifulSoup(response.content, "html.parser")
+
+# Next Scrape the Language name and annual average salary and print the dataframe
+html_tables = soup.find_all('table')
+data_frame = pd.read_html(str(html_tables))[0]
+data_frame.columns = data_frame.iloc[0]
+data_frame = data_frame.drop([0]).reset_index(drop=True)
+Lang_AvgSal_DF = data_frame[['Language','Average Annual Salary']]
+Lang_AvgSal_DF
+
+# Next save the data frame 
+Lang_AvgSal_DF.to_csv('popular-languages.csv')
+
+# Now we have a csv file to work with
