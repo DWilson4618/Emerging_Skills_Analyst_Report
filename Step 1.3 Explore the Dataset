@@ -1,0 +1,41 @@
+# Now that we have a csv file to work with we can explore the data set and get familiar with the data types
+#
+# Import the required libraries
+!pip3 install beautifulsoup4
+print("BS Installed")
+!pip3 install requests
+print("Requests Installed")
+!pip install html5lib
+print("Html 5 Lib")
+
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import html5lib
+print("Done")
+
+# The data set is available on the IBM Cloud at the below url, load the data into a data frame
+dataset_url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/LargeData/m1_survey_data.csv"
+df = pd.read_csv(dataset_url)
+
+# Explore the data set
+# Print the head
+df.head()
+
+# Print the number of rows in the dataset
+len(df)
+
+# Print the number of columns in the dataset
+len(df.axes[1])
+
+# Lets identify the data types of each column
+df.dtypes
+
+# What is the mean age of the survey participants
+df['Age'].mean()
+
+# The data set is a result of a world wide survey. Print the unique countreis from the 'Country' column
+unique_countries = df['Country'].unique()
+len(unique_countries)
+
+# Now we have a basic understanding of our data set and its attributes
