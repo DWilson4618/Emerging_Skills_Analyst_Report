@@ -1,0 +1,59 @@
+# In this section we are working with a cleeaned dataset from the previous module, and we will perform 
+# some exploratory data analysis. Finding the distribution of data, presence of outliers, and determine 
+# the correlation between differnt columns in the dataset. 
+#
+# Import pandas and load the dataset
+import pandas as pd
+df = pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/LargeData/m2_survey_data.csv")
+
+# Plot the distribution curve for the column 'ConvertedComp'
+df.ConvertedComp.plot(kind='kde')
+
+# Plot the histogram for the column 'ConvertedComp'
+df.ConvertedComp.plot(kind='hist')
+
+# What is the median of the column 'ConvertedComp'
+df.ConvertedComp.median()
+
+# How many responders identified themselves only as a "Man"
+menOnly = df.query('Gender=="Man"')
+menOnly.Gender.value_counts()
+
+# Find out the median 'ConvertedComp' of responders that identified themselves only as a "Woman"
+SubDf = df.query('Gender=="Woman"')
+SubDf.ConvertedComp.median()
+
+# Give the five number summary for the colun 'Age'
+df.Age.describe()
+
+# Plot a histogram of the column 'Age'
+df.Age.plot(kind='hist')
+
+# Next we will focus on finding the outliers 
+#Import numpy
+import numpy as np
+# Find out if outliers exist in the column 'ConvertedComp' using a box plot
+df.ConvertedComp.plot(kind='box')
+
+# Find out the Inter Quartile Range for the column 'ConvertedComp'
+Q1 = df.ConvertedComp.quantile(0.25)
+Q3 = df.ConvertedComp.quantile(0.75)
+IQR = Q3-Q1
+print("Inner Quartile Range:",IQR)
+
+# Find out the upper and lower bounds
+LB = Q1-1.5*IQR
+UB = Q3+1.5*IQR
+print("LowerBound:",LB,"UpperBound:",UB)
+
+# Identify how many outliers are in the 'ConvertedComp' column
+sum(df.ConvertedComp>=UB)
+
+# Create a new dataframe by removing the outliers from the 'ConvertedComp' column
+
+
+# Next we'll focus on finding correlation
+# Find the correlation between 'Age' and all other numerical columns
+df.corr()
+
+# Now we have a better understanding of our variables and their relationships as well as the distribution of our data
