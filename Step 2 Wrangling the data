@@ -1,3 +1,42 @@
 # This section will focus on Wrangling the data set that we have previously collected and stored
 #
-# Import the pandas module
+# Import the pandas module and load the dataset into a dataframe
+import pandas as pd
+df = pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/LargeData/m1_survey_data.csv")
+
+# How many duplicate values are in the dataset, remove them, then check that the dups are gone.
+df.duplicated().value_counts()
+df = df.drop_duplicates()
+df.duplicated().value_counts()
+
+# Find the missing values
+df.isnull().sum()
+
+# How many missing values are in the column 'WorkLoc'
+df['WorkLoc'].isnull().sum()
+
+# Now we will work of filling those missing values with the mode value of the column and verify
+df['WorkLoc'].value_counts()
+df['WorkLoc'] = df['WorkLoc'].fillna("Office")
+df['WorkLoc'].isnull().sum()
+
+# Next we focus on normalizing the dataset, we have two columns in the dataset that talk about compensation
+# One is 'CompFreq' (How often the dev is paid) and the other is 'CompTotal' ( How much they get paid)
+# We will focus on normalizing by creating a column called 'NormalizedAnnualCompensaton' for easier analysis
+#
+# First list out the various categories in the column 'CompFreq'
+df['CompFreq'].value_counts()
+
+# Create the new column and update its value based on the Freq the dev gets paid then check the results
+def fillComp(freq,total):
+    if freq == 'Yearly':
+        return total
+    elif freq == 'Monthly':
+        return total * 12
+    elif freq == "Weekly":
+        return total * 52
+
+df['NormalizedAnnualCompensation'] = df.apply(lambda row : fillComp(row['CompFreq'],row['CompTotal']), axis = 1)
+df[['NormalizedAnnualCompensation','CompFreq','CompTotal']]
+
+# Now we have a dataset that we can draw real connections from
