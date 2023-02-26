@@ -107,11 +107,48 @@ SELECT
 Age, WorkWeekHrs, CodeRevHrs
 FROM master
 WHERE Age between 30 and 35
-group by Age
 """
 # the read_sql_query runs the sql query and returns the data as a dataframe
 med_age_work_code = pd.read_sql_query(QUERY,conn)
 med_age_work_code
 
 # Now create the stacked chart
+x = med_age_work_code.Age
+y1 = med_age_work_code.WorkWeekHrs.median()
+y2 = med_age_work_code.CodeRevHrs.median()
+plt.bar(x,y1,color='pink')
+plt.bar(x,y1,bottom=y2,color='purple')
+plt.xlabel("Age")
+plt.ylabel("Hours per Week")
+plt.title("Median Work/Code Rev Hrs for Ages 30 to 35")
+plt.legend(["Code_Rev_Hrs", "Work_Week_Hrs"])
+plt.show()
 
+# Now plot the median 'ConvertedComp' for all ages from 45 to 60
+QUERY = """
+SELECT
+Age, ConvertedComp
+FROM master
+WHERE Age between 45 and 60
+group by Age
+"""
+# the read_sql_query runs the sql query and returns the data as a dataframe then visualize the line
+converted_Comp = pd.read_sql_query(QUERY,conn)
+converted_Comp
+converted_Comp.plot.line(x='Age',y='ConvertedComp')
+
+# Create a horizontal bar chart using column 'MainBranch'
+QUERY = """
+SELECT 
+*
+FROM master
+"""
+# the read_sql_query runs the sql query and returns the data as a dataframe
+mainBranch = pd.read_sql_query(QUERY,conn)
+mainBranch.head(1)
+
+counts = mainBranch['MainBranch'].value_counts()
+counts.plot.barh()
+plt.show()
+
+# Now that we have visualized our dataset we can draw some solid conclusions from the data.
