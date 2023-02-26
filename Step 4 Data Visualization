@@ -1,0 +1,117 @@
+# For this section we will be focusing on the visualization of data. The data set will be presented to you
+# in the form of a RDBMS, you will have to use SQL queries to extract the data
+#
+# Demo how to work with database
+#
+# Download the database file 
+!wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DA0321EN-SkillsNetwork/LargeData/m4_survey_data.sqlite
+
+# Connect to the database
+import sqlite3
+conn = sqlite3.connect("m4_survey_data.sqlite")
+
+# Import pandas module 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# How to run an SQL query
+QUERY = """
+SELECT COUNT(*)
+FROM master
+"""
+
+# the read_sql_query runs the sql query and returns the data as a dataframe
+df = pd.read_sql_query(QUERY,conn)
+df.head()
+
+# How to list all tables
+QUERY = """
+SELECT name as Table_Name FROM
+sqlite_master WHERE
+type = 'table'
+"""
+# the read_sql_query runs the sql query and returns the data as a dataframe
+pd.read_sql_query(QUERY,conn)
+
+# How to run a group by query
+QUERY = """
+SELECT Age,COUNT(*) as count
+FROM master
+group by age
+order by age
+"""
+pd.read_sql_query(QUERY,conn)
+
+# How to describe a table
+table_name = 'master'  # the table you wish to describe
+
+QUERY = """
+SELECT sql FROM sqlite_master
+WHERE name= '{}'
+""".format(table_name)
+
+df = pd.read_sql_query(QUERY,conn)
+print(df.iat[0,0])
+
+# Lets create a data frame of the data set we need
+QUERY = """
+SELECT * 
+FROM master
+"""
+
+df = pd.read_sql_query(QUERY,conn)
+df
+
+# Now we can visualize the elements of this data frame that we need
+
+# Plot a histogram of the 'ConvertedComp' column 
+df.ConvertedComp.plot(kind='hist',bins=100)
+
+# Plot a box plot of Age
+df.Age.plot(kind='box')
+
+# Plot a scatter plot with 'Age' and 'WorkWeekHrs' 
+df.plot.scatter(x='Age',y='WorkWeekHrs')
+
+# Plot a bubble plot of 'WorkWeekHrs' and 'CodeRevHrs', using 'Age' as the bubble size
+df.plot.scatter(x='WorkWeekHrs',y='CodeRevHrs',s='Age', alpha=0.25)
+
+# Next we will create a pie plot of the top 5 databases that respondents wish to learn next year.
+# Create a data frame of the top 5 databases that respondents wish to learn next year
+QUERY = """
+SELECT 
+count(DatabaseDesireNextYear) as Count, 
+DatabaseDesireNextYear as Database
+FROM DatabaseDesireNextYear
+group by DatabaseDesireNextYear
+order by Count DESC
+limit 5
+"""
+# the read_sql_query runs the sql query and returns the data as a dataframe
+top5 = pd.read_sql_query(QUERY,conn)
+top5
+
+# Plot the pie plot
+import matplotlib.pyplot as plt
+sizes = top5.Count
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, 
+        labels = top5.Database,
+        autopct = '%1.1f%%')
+ax1.axis('equal')
+plt.show()
+
+# Create a stacked chart of the medain 'WorkWeekHrs' and 'CodeRevHrs' for the age group 30 to 35
+QUERY = """
+SELECT
+Age, WorkWeekHrs, CodeRevHrs
+FROM master
+WHERE Age between 30 and 35
+group by Age
+"""
+# the read_sql_query runs the sql query and returns the data as a dataframe
+med_age_work_code = pd.read_sql_query(QUERY,conn)
+med_age_work_code
+
+# Now create the stacked chart
+
