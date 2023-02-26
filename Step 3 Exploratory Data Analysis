@@ -54,6 +54,6 @@ sum(df.ConvertedComp>=UB)
 
 # Next we'll focus on finding correlation
 # Find the correlation between 'Age' and all other numerical columns
-df.corr()
+df.corr()['Age']
 
 # Now we have a better understanding of our variables and their relationships as well as the distribution of our data
